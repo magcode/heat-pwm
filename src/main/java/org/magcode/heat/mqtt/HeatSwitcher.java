@@ -54,6 +54,15 @@ public class HeatSwitcher implements Runnable {
 					ScheduledFuture<?> countdown = scheduler.schedule(new HeatReleaser(mqttClient, room), time,
 							TimeUnit.MINUTES);
 				}
+			} else {
+				// disable relay
+				MqttMessage message = new MqttMessage();
+				message.setPayload("0".getBytes());
+				try {
+					this.mqttClient.publish(room.getTopSwitch(), message);
+				} catch (MqttException e) {
+					logger.error("Error during switch OFF", e);
+				}
 			}
 		}
 	}

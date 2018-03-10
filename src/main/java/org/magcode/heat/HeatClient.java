@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LifeCycle;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.magcode.heat.mqtt.HeatSwitcher;
@@ -123,8 +124,12 @@ public class HeatClient {
 
 	private static void startMQTTClient() throws MqttException {
 		mqttClient = new MqttClient(mqttServer, "client-for-heat");
+		MqttConnectOptions connOpt = new MqttConnectOptions();
+		connOpt.setCleanSession(true);
+		connOpt.setKeepAliveInterval(30);
+		connOpt.setAutomaticReconnect(true);
 		mqttClient.setCallback(new MqttSubscriber(rooms));
-		mqttClient.connect();
+		mqttClient.connect(connOpt);
 		for (Entry<String, Room> entry : rooms.entrySet()) {
 			Room room = entry.getValue();
 			mqttClient.subscribe(room.getTopActTemp());

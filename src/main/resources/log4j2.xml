@@ -13,7 +13,7 @@
 				<pattern>%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</pattern>
 			</PatternLayout>
 			<Policies>
-				<SizeBasedTriggeringPolicy size="1 KB" />
+				<SizeBasedTriggeringPolicy size="1 MB" />
 			</Policies>
 			<DefaultRolloverStrategy max="4" />
 		</RollingFile>
@@ -21,7 +21,6 @@
 	<Loggers>
 		<Root level="debug">
 			<AppenderRef ref="Console" />
-			<AppenderRef ref="heatinglog" />
 			<AppenderRef ref="RollingFile" />
 		</Root>
 	</Loggers>

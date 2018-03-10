@@ -20,7 +20,7 @@ public class MqttSubscriber implements MqttCallback {
 
 	@Override
 	public void connectionLost(Throwable cause) {
-
+		logger.error("MQTT connection lost", cause);
 	}
 
 	@Override
