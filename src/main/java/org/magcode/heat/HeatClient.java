@@ -115,7 +115,7 @@ public class HeatClient {
 			message.setPayload("0".getBytes());
 			try {
 				mqttClient.publish(room.getTopSwitch(), message);
-				logger.info("Switch OFF for room {}", room.getName());
+				logger.info("Switch OFF for room '{}'", room.getName());
 			} catch (MqttException e) {
 				e.printStackTrace();
 			}
@@ -134,7 +134,7 @@ public class HeatClient {
 			Room room = entry.getValue();
 			mqttClient.subscribe(room.getTopActTemp());
 			mqttClient.subscribe(room.getTopTargetTemp());
-			logger.info("Handling room {} with topics {} and {}, switch: {}", room.getName(), room.getTopActTemp(),
+			logger.info("Handling room '{}' with topics {} and {}, switch: {}", room.getName(), room.getTopActTemp(),
 					room.getTopTargetTemp(), room.getTopSwitch());
 		}
 		logger.info("Connected to MQTT broker.");

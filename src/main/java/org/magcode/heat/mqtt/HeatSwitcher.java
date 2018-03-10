@@ -36,7 +36,7 @@ public class HeatSwitcher implements Runnable {
 			Float targetTemp = room.getTargetTemp();
 			float diff = targetTemp - actTemp;
 			int time = getTimeForDiff(diff);
-			logger.debug("Cyclic check: room {} actual temp {}, target temp {}, timeForDiff {}", room.getName(),
+			logger.debug("Cyclic check: room '{}' actual temp: {}, target temp: {}, calculated heating time: {}", room.getName(),
 					room.getActTemp(), room.getTargetTemp(), time);
 
 			if (time > 0) {
@@ -44,7 +44,7 @@ public class HeatSwitcher implements Runnable {
 				MqttMessage message = new MqttMessage();
 				message.setPayload("1".getBytes());
 				try {
-					logger.info("Switch ON for room {}", room.getName());
+					logger.info("Switch ON for room '{}'", room.getName());
 					this.mqttClient.publish(room.getTopSwitch(), message);
 				} catch (MqttException e) {
 					logger.error("Error during switch ON", e);
@@ -60,7 +60,7 @@ public class HeatSwitcher implements Runnable {
 				MqttMessage message = new MqttMessage();
 				message.setPayload("0".getBytes());
 				try {
-					logger.info("Switch OFF for room {}", room.getName());
+					logger.info("Switch OFF for room '{}'", room.getName());
 					this.mqttClient.publish(room.getTopSwitch(), message);
 				} catch (MqttException e) {
 					logger.error("Error during switch OFF", e);
