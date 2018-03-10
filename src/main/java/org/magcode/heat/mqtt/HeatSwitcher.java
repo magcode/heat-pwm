@@ -44,6 +44,7 @@ public class HeatSwitcher implements Runnable {
 				MqttMessage message = new MqttMessage();
 				message.setPayload("1".getBytes());
 				try {
+					logger.info("Switch ON for room {}", room.getName());
 					this.mqttClient.publish(room.getTopSwitch(), message);
 				} catch (MqttException e) {
 					logger.error("Error during switch ON", e);
@@ -59,6 +60,7 @@ public class HeatSwitcher implements Runnable {
 				MqttMessage message = new MqttMessage();
 				message.setPayload("0".getBytes());
 				try {
+					logger.info("Switch OFF for room {}", room.getName());
 					this.mqttClient.publish(room.getTopSwitch(), message);
 				} catch (MqttException e) {
 					logger.error("Error during switch OFF", e);
