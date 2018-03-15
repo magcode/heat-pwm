@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -123,7 +124,7 @@ public class HeatClient {
 	}
 
 	private static void startMQTTClient() throws MqttException {
-		mqttClient = new MqttClient(mqttServer, "client-for-heat");
+		mqttClient = new MqttClient(mqttServer, "client-for-heat" + UUID.randomUUID().toString());
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 		connOpt.setCleanSession(true);
 		connOpt.setKeepAliveInterval(30);

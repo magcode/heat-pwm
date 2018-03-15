@@ -70,17 +70,14 @@ public class HeatSwitcher implements Runnable {
 	}
 
 	private int getTimeForDiff(Float diff) {
-		if (diff >= 2) {
+		if (diff >= 1) {
 			return interval;
 		}
-		if (diff >= 1) {
-			return interval / 2;
-		}
-		if (diff >= 0.5) {
-			return interval / 3;
+		if (diff >= 0.3) {
+			return (int) (interval / 1.5);
 		}
 		if (diff >= 0.1) {
-			return interval / 4;
+			return interval / 2;
 		}
 		return 0;
 	}
