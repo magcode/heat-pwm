@@ -40,9 +40,6 @@ public class HeatClient {
 		// connect to MQTT broker
 		startMQTTClient();
 
-		// init relays
-		initRelays();
-
 		// run scheduler
 		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 		Runnable heatSwitcher = new HeatSwitcher(rooms, interval, mqttClient);
@@ -105,20 +102,6 @@ public class HeatClient {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}
-		}
-	}
-
-	private static void initRelays() {
-		for (Entry<String, Room> entry : rooms.entrySet()) {
-			Room room = entry.getValue();
-			MqttMessage message = new MqttMessage();
-			message.setPayload("0".getBytes());
-			try {
-				mqttClient.publish(room.getTopSwitch(), message);
-				logger.info("Switch OFF for room '{}'", room.getName());
-			} catch (MqttException e) {
-				e.printStackTrace();
 			}
 		}
 	}
