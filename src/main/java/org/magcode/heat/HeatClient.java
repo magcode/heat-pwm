@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,7 +22,6 @@ import org.apache.logging.log4j.core.LifeCycle;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.magcode.heat.mqtt.HeatSwitcher;
 import org.magcode.heat.mqtt.MqttSubscriber;
 
@@ -29,6 +29,7 @@ public class HeatClient {
 	private static Map<String, Room> rooms;
 	private static String mqttServer;
 	private static int interval = 60;
+	private static int minimumCycle = 5;
 	private static MqttClient mqttClient;
 	private static Logger logger = LogManager.getLogger(HeatClient.class);
 
@@ -77,6 +78,7 @@ public class HeatClient {
 			props.load(input);
 
 			interval = Integer.parseInt(props.getProperty("interval", "30"));
+			minimumCycle = Integer.parseInt(props.getProperty("minimumCycle", "5"));
 			mqttServer = props.getProperty("mqttServer", "tcp://localhost");
 			Enumeration<?> e = props.propertyNames();
 
@@ -89,7 +91,20 @@ public class HeatClient {
 						one.setTopTargetTemp((props.getProperty("heat" + i + ".topTargetTemp")));
 						one.setTopSwitch((props.getProperty("heat" + i + ".topSwitch")));
 						one.setName(props.getProperty("heat" + i + ".name"));
+						one.setInterval(interval);
+						one.setMinimumCycle(minimumCycle);
+
+						String propOffset = "heat" + i + ".timing.offset";
+						if (props.containsKey(propOffset)) {
+							one.setOffset(Integer.parseInt(propOffset));
+						}
+						String propFactor = "heat" + i + ".timing.factor";
+						if (props.containsKey(propFactor)) {
+							one.setFactor(Integer.parseInt(propFactor));
+						}
+
 						rooms.put(one.getName(), one);
+
 					}
 				}
 			}
@@ -100,14 +115,20 @@ public class HeatClient {
 				try {
 					input.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.error("Failed to close file", e);
 				}
 			}
 		}
 	}
 
 	private static void startMQTTClient() throws MqttException {
-		mqttClient = new MqttClient(mqttServer, "client-for-heat" + UUID.randomUUID().toString());
+		String hostName = "";
+		try {
+			hostName = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			logger.error("Failed to get hostname", e);
+		}
+		mqttClient = new MqttClient(mqttServer, "client-for-heat-on-" + hostName);
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 		connOpt.setCleanSession(true);
 		connOpt.setKeepAliveInterval(30);

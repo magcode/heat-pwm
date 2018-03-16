@@ -2,7 +2,6 @@ package org.magcode.heat.mqtt;
 
 import javax.script.*;
 
-import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Executors;
@@ -31,8 +30,6 @@ public class HeatSwitcher implements Runnable {
 		this.mqttClient = mqttClient;
 		this.scheduler = Executors.newScheduledThreadPool(rooms.size());
 		this.interval = interval;
-		ScriptEngineManager manager = new ScriptEngineManager();
-		engine = manager.getEngineByName("nashorn");
 	}
 
 	@Override
@@ -42,7 +39,7 @@ public class HeatSwitcher implements Runnable {
 			Float actTemp = room.getActTemp();
 			Float targetTemp = room.getTargetTemp();
 			float diff = targetTemp - actTemp;
-			int time = getTimeForDiff(diff, room);
+			int time = room.getTimeForDiff(diff);
 			logger.debug("Cyclic check: room '{}' actual temp: {}, target temp: {}, calculated heating time: {}",
 					room.getName(), room.getActTemp(), room.getTargetTemp(), time);
 
@@ -75,37 +72,4 @@ public class HeatSwitcher implements Runnable {
 			}
 		}
 	}
-
-	private int getTimeForDiff(Float diff) {
-		if (diff >= 1.5) {
-			return interval;
-		}
-		if (diff >= 1) {
-			return (int) (interval / 1.5);
-		}
-		if (diff >= 0.5) {
-			return interval / 3;
-		}
-		if (diff >= 0.1) {
-			return interval / 4;
-		}
-		return 0;
-	}
-
-	private int getTimeForDiff(Float diff, Room room) {
-		try {
-			engine.eval(new java.io.FileReader(room.getName().toLowerCase() + ".js"));
-			Invocable inv = (Invocable) engine;
-			Object o = inv.invokeFunction("getTimeForDiff", diff);
-			logger.info(o.toString());
-		} catch (FileNotFoundException | ScriptException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
-	}
-
 }
