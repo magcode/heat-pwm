@@ -68,6 +68,7 @@ echo "
 [Unit]
 Description=$APPNAME
 After=syslog.target
+Wants=network-online.target
 After=network-online.target
 [Service]
 User=$APPUSER
@@ -81,3 +82,4 @@ echo "Created the /etc/systemd/system/$APPNAME.service file"
 
 # Reload the daemon
 systemctl daemon-reload
+sudo systemctl enable $APPNAME.service
