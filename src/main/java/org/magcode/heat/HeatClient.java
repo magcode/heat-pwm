@@ -96,11 +96,11 @@ public class HeatClient {
 
 						String propOffset = "heat" + i + ".timing.offset";
 						if (props.containsKey(propOffset)) {
-							one.setOffset(Integer.parseInt(propOffset));
+							one.setOffset(Integer.parseInt(props.getProperty(propOffset)));
 						}
 						String propFactor = "heat" + i + ".timing.factor";
 						if (props.containsKey(propFactor)) {
-							one.setFactor(Integer.parseInt(propFactor));
+							one.setFactor(Integer.parseInt(props.getProperty(propFactor)));
 						}
 
 						rooms.put(one.getName(), one);
