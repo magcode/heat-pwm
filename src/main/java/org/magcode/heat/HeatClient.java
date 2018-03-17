@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LifeCycle;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.Level;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -81,7 +83,11 @@ public class HeatClient {
 			minimumCycle = Integer.parseInt(props.getProperty("minimumCycle", "5"));
 			mqttServer = props.getProperty("mqttServer", "tcp://localhost");
 			Enumeration<?> e = props.propertyNames();
-
+			
+			if (props.containsKey("LOGLEVEL")) {
+				Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.forName(props.getProperty("LOGLEVEL"), 0));
+			}
+			
 			while (e.hasMoreElements()) {
 				String key = (String) e.nextElement();
 				for (int i = 1; i < 11; i++) {
@@ -130,7 +136,7 @@ public class HeatClient {
 		}
 		mqttClient = new MqttClient(mqttServer, "client-for-heat-on-" + hostName);
 		MqttConnectOptions connOpt = new MqttConnectOptions();
-		connOpt.setCleanSession(true);
+		connOpt.setCleanSession(false);
 		connOpt.setKeepAliveInterval(30);
 		connOpt.setAutomaticReconnect(true);
 		mqttClient.setCallback(new MqttSubscriber(rooms));
