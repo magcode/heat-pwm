@@ -3,6 +3,7 @@ package org.magcode.heat.mqtt;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -37,6 +38,15 @@ public class MqttSubscriber implements MqttCallback {
 				Float targetTemp = Float.parseFloat(message.toString());
 				room.setTargetTemp(targetTemp);
 				logger.trace("room {} has now target temp {}", room.getName(), room.getTargetTemp());
+			}
+			if (StringUtils.isNotBlank(room.getTopEnabled()) && topic.equals(room.getTopEnabled())) {
+				String mess = message.toString();
+				if (mess.equalsIgnoreCase("ON") || mess.equals("1")) {
+					room.setHeatingEnabled(true);
+				} else {
+					room.setHeatingEnabled(false);
+				}
+				logger.info("room {} heating is now enabled={}", room.getName(), room.isHeatingEnabled());
 			}
 		}
 	}

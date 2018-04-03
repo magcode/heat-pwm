@@ -4,6 +4,7 @@ public class Room {
 	private String topActTemp;
 	private String topTargetTemp;
 	private String topSwitch;
+	private String topEnabled;
 	private String name;
 	private float actTemp;
 	private float targetTemp;
@@ -11,6 +12,7 @@ public class Room {
 	private int factor = 50;
 	private int minimumCycle = 5;
 	private int interval = 30;
+	private boolean heatingEnabled = true;
 
 	public int getTimeForDiff(float diff) {
 
@@ -111,5 +113,21 @@ public class Room {
 
 	public void setInterval(int intervall) {
 		this.interval = intervall;
+	}
+
+	public boolean isHeatingEnabled() {
+		return heatingEnabled;
+	}
+
+	public void setHeatingEnabled(boolean heatingEnabled) {
+		this.heatingEnabled = heatingEnabled;
+	}
+
+	public String getTopEnabled() {
+		return topEnabled;
+	}
+
+	public void setTopEnabled(String topEnabled) {
+		this.topEnabled = topEnabled;
 	}
 }

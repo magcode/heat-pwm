@@ -43,7 +43,7 @@ public class HeatSwitcher implements Runnable {
 			logger.debug("Cyclic check: room '{}' actual temp: {}, target temp: {}, calculated heating time: {}",
 					room.getName(), room.getActTemp(), room.getTargetTemp(), time);
 
-			if (time > 0) {
+			if (time > 0 && room.isHeatingEnabled()) {
 				// enable relay
 				MqttMessage message = new MqttMessage();
 				message.setPayload("1".getBytes());

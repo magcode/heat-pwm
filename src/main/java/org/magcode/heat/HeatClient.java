@@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LifeCycle;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -99,6 +100,12 @@ public class HeatClient {
 						one.setName(props.getProperty("heat" + i + ".name"));
 						one.setInterval(interval);
 						one.setMinimumCycle(minimumCycle);
+						
+						// the "enable" topic is optional
+						String keyEnabled = "heat" + i + ".topEnabled";
+						if (props.containsKey(keyEnabled)) {
+							one.setTopEnabled(props.getProperty(keyEnabled));
+						}
 
 						String propOffset = "heat" + i + ".timing.offset";
 						if (props.containsKey(propOffset)) {
@@ -145,9 +152,12 @@ public class HeatClient {
 			Room room = entry.getValue();
 			mqttClient.subscribe(room.getTopActTemp());
 			mqttClient.subscribe(room.getTopTargetTemp());
+			if (StringUtils.isNotBlank(room.getTopEnabled())) {
+				mqttClient.subscribe(room.getTopEnabled());
+			}
 			logger.info("Handling room '{}' with topics {} and {}, switch: {}", room.getName(), room.getTopActTemp(),
 					room.getTopTargetTemp(), room.getTopSwitch());
 		}
-		logger.info("Connected to MQTT broker.");
+		logger.info("Connected to MQTT broker {}", mqttServer);
 	}
 }
