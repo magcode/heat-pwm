@@ -7,11 +7,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.magcode.heat.Room;
 
-public class MqttSubscriber implements MqttCallback {
+public class MqttSubscriber implements MqttCallbackExtended {
 	private Map<String, Room> rooms;
 	private static Logger logger = LogManager.getLogger(MqttSubscriber.class);
 
@@ -22,6 +22,11 @@ public class MqttSubscriber implements MqttCallback {
 	@Override
 	public void connectionLost(Throwable cause) {
 		logger.error("MQTT connection lost", cause);
+	}
+
+	// @Override
+	public void connectComplete(boolean reconnect, java.lang.String serverURI) {
+		logger.error("MQTT connection complete. Reconnect: {}", reconnect);
 	}
 
 	@Override
