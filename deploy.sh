@@ -8,7 +8,7 @@ if [ "$#" -ne 1 -o ${#SSH} = 0 ]; then
     exit
 fi
 
-#mvn clean package
+mvn clean package
 ssh $SSH rm /tmp/heat-pwm-*-jar-with-dependencies.jar
 cd target
 jarfile=$(find . -name *dependencies.jar)
