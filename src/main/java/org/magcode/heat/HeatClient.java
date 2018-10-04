@@ -146,7 +146,7 @@ public class HeatClient {
 		connOpt.setCleanSession(false);
 		connOpt.setKeepAliveInterval(30);
 		connOpt.setAutomaticReconnect(true);
-		mqttClient.setCallback(new MqttSubscriber(rooms));
+		mqttClient.setCallback(new MqttSubscriber(rooms,mqttClient));
 		mqttClient.connect(connOpt);
 		for (Entry<String, Room> entry : rooms.entrySet()) {
 			Room room = entry.getValue();

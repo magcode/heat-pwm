@@ -8,15 +8,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.magcode.heat.Room;
 
 public class MqttSubscriber implements MqttCallbackExtended {
 	private Map<String, Room> rooms;
 	private static Logger logger = LogManager.getLogger(MqttSubscriber.class);
+	private MqttClient client;
 
-	public MqttSubscriber(Map<String, Room> rooms) {
+	public MqttSubscriber(Map<String, Room> rooms, MqttClient mqttClient) {
 		this.rooms = rooms;
+		this.client = mqttClient;
 	}
 
 	@Override
@@ -26,7 +30,23 @@ public class MqttSubscriber implements MqttCallbackExtended {
 
 	// @Override
 	public void connectComplete(boolean reconnect, java.lang.String serverURI) {
-		logger.error("MQTT connection complete. Reconnect: {}", reconnect);
+		logger.info("MQTT connection complete. Reconnect: {}", reconnect);
+		if (reconnect) {
+			for (Entry<String, Room> entry : rooms.entrySet()) {
+				Room room = entry.getValue();
+				try {
+					this.client.subscribe(room.getTopActTemp());
+					this.client.subscribe(room.getTopTargetTemp());
+					if (StringUtils.isNotBlank(room.getTopEnabled())) {
+						this.client.subscribe(room.getTopEnabled());
+					}
+					logger.info("Handling room '{}' with topics {} and {}, switch: {}", room.getName(),
+							room.getTopActTemp(), room.getTopTargetTemp(), room.getTopSwitch());
+				} catch (MqttException e) {
+					logger.error("Error while subscribing", e);
+				}
+			}
+		}
 	}
 
 	@Override
