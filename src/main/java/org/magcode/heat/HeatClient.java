@@ -143,7 +143,7 @@ public class HeatClient {
 		}
 		mqttClient = new MqttClient(mqttServer, "client-for-heat-on-" + hostName);
 		MqttConnectOptions connOpt = new MqttConnectOptions();
-		connOpt.setCleanSession(false);
+		connOpt.setCleanSession(true);
 		connOpt.setKeepAliveInterval(30);
 		connOpt.setAutomaticReconnect(true);
 		mqttClient.setCallback(new MqttSubscriber(rooms,mqttClient));
